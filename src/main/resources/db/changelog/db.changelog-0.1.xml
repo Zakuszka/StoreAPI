@@ -44,4 +44,42 @@
 		</createTable>
 	</changeSet>
 
+	<changeSet author="store" id="1.1">
+		<createTable tableName="products">
+			<column name="id" type="int" autoIncrement="true"
+				startWith="1">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="nvarchar(255)">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="description" type="nvarchar(1000)" />
+			<column name="price" type="decimal(12,2)" />
+			<column name="category" type="nvarchar(255)" />
+			<column name="available" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="created_at" type="datetime" />
+			<column name="updated_at" type="datetime" />
+		</createTable>
+
+		<createIndex tableName="products"
+			indexName="idx_products_category" unique="false">
+			<column name="category" />
+		</createIndex>
+
+	</changeSet>
+
+	<changeSet author="store" id="1.2">
+		<sql splitStatements="true">
+			INSERT INTO users (first_name, last_name, username, password, enabled, created_at, updated_at) VALUES ('Admin', 'Admin', 'admin@admin.com', '{pbkdf2}c348efa5f3bfc3a118f9df39b04a8be03a0ab58028b5db62e1b05fb8dde7e69b3db286b728f6537a', 1, GETDATE(), GETDATE());
+			INSERT INTO roles (name) VALUES ('ADMIN'), ('MANAGER'), ('USER');
+			INSERT INTO users_roles (user_id, role_name) VALUES (1, 'ADMIN');
+		</sql>
+	</changeSet>
+
 </databaseChangeLog> 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import com.store.storeapi.config.security.PasswordEncode;
 import com.store.storeapi.exception.BadRequestException;
 import com.store.storeapi.exception.BaseException;
@@ -55,6 +56,8 @@ public class UserBL {
 	private ValidityService validityService;
 
 	public TokenResponse login(LoginRequest loginRequest) throws BaseException {
+
+		validateParameters(loginRequest);
 
 		AuthUserDetails userDetails = (AuthUserDetails) userDetailsService.loadUserByUsername(loginRequest.getUsername());
 
@@ -192,6 +195,12 @@ public class UserBL {
 		}
 
 		return users.stream().map(user -> new UserDetailsResponse(user)).collect(Collectors.toList());
+	}
+
+	private static void validateParameters(LoginRequest loginRequest) throws BaseException {
+		if (StringUtils.isEmpty(loginRequest.getUsername()) || StringUtils.isEmpty(loginRequest.getPassword())) {
+			throw new BadRequestException(ErrorMessage.MISSING_MANDATORY_PARAMETER.getCode(), ErrorMessage.MISSING_MANDATORY_PARAMETER.getMessage());
+		}
 	}
 
 	private void validateParameters(UserRequest userRequest) throws BaseException {
