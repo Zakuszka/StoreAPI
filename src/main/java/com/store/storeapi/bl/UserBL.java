@@ -85,12 +85,14 @@ public class UserBL {
 		user.setEnabled(true);
 
 		List<Role> roles = new ArrayList<>();
-
 		userRequest.getRoles().forEach(role -> roles.add(roleService.getByName(role)));
-
 		user.setRoles(roles);
 
-		return new UserDetailsResponse(userService.save(user));
+		user = userService.save(user);
+
+		LOGGER.info(String.format("[createUser] New User created with username: %s and id: %d", user.getUsername(), user.getId()));
+
+		return new UserDetailsResponse(user);
 	}
 
 	public UserDetailsResponse getUserDetails(AuthUserDetails authUserDetails) throws BaseException {
@@ -99,7 +101,7 @@ public class UserBL {
 
 		if (user == null) {
 			LOGGER.warn(String.format("[getUserDetails] User with id: %d does not exists", authUserDetails.getUserId()));
-			throw new BadRequestException(ErrorMessage.USER_DOES_NOT_EXIST.getCode(), ErrorMessage.USER_DOES_NOT_EXIST.getMessage());
+			throw new BadRequestException(ErrorMessage.USER_NOT_EXISTS.getCode(), ErrorMessage.USER_NOT_EXISTS.getMessage());
 		}
 
 		return new UserDetailsResponse(user);
@@ -110,7 +112,7 @@ public class UserBL {
 
 		if (user == null) {
 			LOGGER.warn(String.format("[updateUserDetails] User with id: %d does not exists", authUserDetails.getUserId()));
-			throw new BadRequestException(ErrorMessage.USER_DOES_NOT_EXIST.getCode(), ErrorMessage.USER_DOES_NOT_EXIST.getMessage());
+			throw new BadRequestException(ErrorMessage.USER_NOT_EXISTS.getCode(), ErrorMessage.USER_NOT_EXISTS.getMessage());
 		}
 
 		if (!validityService.validatePhoneNumber(userRequest.getPhoneNumber())) {
@@ -122,7 +124,11 @@ public class UserBL {
 		user.setPhoneNumber(userRequest.getPhoneNumber());
 		user.setAddress(userRequest.getAddress());
 
-		return new UserDetailsResponse(userService.save(user));
+		user = userService.save(user);
+
+		LOGGER.info(String.format("[updateUserDetails] Successfully updated the User with username: %s and id: %d", user.getUsername(), user.getId()));
+
+		return new UserDetailsResponse(user);
 	}
 
 	public TokenResponse changeUserEmail(AuthUserDetails authUserDetails, UserRequest userRequest) throws BaseException {
@@ -130,7 +136,7 @@ public class UserBL {
 
 		if (user == null) {
 			LOGGER.warn(String.format("[changeUserEmail] User with id: %d does not exists", authUserDetails.getUserId()));
-			throw new BadRequestException(ErrorMessage.USER_DOES_NOT_EXIST.getCode(), ErrorMessage.USER_DOES_NOT_EXIST.getMessage());
+			throw new BadRequestException(ErrorMessage.USER_NOT_EXISTS.getCode(), ErrorMessage.USER_NOT_EXISTS.getMessage());
 		}
 
 		if (!validityService.validateEmailAddress(userRequest.getUsername())) {
@@ -140,6 +146,8 @@ public class UserBL {
 		user.setUsername(userRequest.getUsername());
 		userService.save(user);
 
+		LOGGER.info(String.format("[changeUserEmail] Successfully changed the email of the User with id: %d", user.getId()));
+
 		return doLogin(userRequest.getUsername(), authUserDetails.getUserId(), authUserDetails.getAuthorities());
 	}
 
@@ -148,7 +156,7 @@ public class UserBL {
 
 		if (user == null) {
 			LOGGER.warn(String.format("[changeUserPassword] User with id: %d does not exists", authUserDetails.getUserId()));
-			throw new BadRequestException(ErrorMessage.USER_DOES_NOT_EXIST.getCode(), ErrorMessage.USER_DOES_NOT_EXIST.getMessage());
+			throw new BadRequestException(ErrorMessage.USER_NOT_EXISTS.getCode(), ErrorMessage.USER_NOT_EXISTS.getMessage());
 		}
 
 		if (!validityService.validateUserPassword(userRequest.getPassword())) {
@@ -157,6 +165,8 @@ public class UserBL {
 
 		user.setPassword(passwordEncode.encodePassword(userRequest.getPassword()));
 		userService.save(user);
+
+		LOGGER.info(String.format("[changeUserPassword] Successfully changed the password of the User with id: %d", user.getId()));
 
 		return doLogin(userRequest.getUsername(), authUserDetails.getUserId(), authUserDetails.getAuthorities());
 	}
@@ -205,7 +215,7 @@ public class UserBL {
 		claims.put(Constants.AUTHORITIES_CLAIM_NAME, collection.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" ")));
 		claims.put(Constants.USER_ID, String.valueOf(userId));
 
-		LOGGER.info(String.format("[doLogin] Create new authnetication token for User with id: %d", userId));
+		LOGGER.info(String.format("[doLogin] Create new authentication token for User with id: %d", userId));
 
 		return new TokenResponse(jwtTokenProvider.generatePasswordToken(claims), jwtTokenProvider.getPasswordTokenExpirationInMinutes());
 	}
