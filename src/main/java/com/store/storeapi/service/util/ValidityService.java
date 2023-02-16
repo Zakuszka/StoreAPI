@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 
 @Service
 public class ValidityService {
@@ -28,7 +29,7 @@ public class ValidityService {
 	}
 
 	private static boolean validate(String stringToMatch, Pattern pattern) {
-		return pattern.matcher(stringToMatch).matches();
+		return !StringUtils.isEmpty(stringToMatch) && pattern.matcher(stringToMatch).matches();
 	}
 
 }

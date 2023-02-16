@@ -8,6 +8,8 @@ public final class Constants {
 	public static final Integer MAXIMUM_SEARCH_TERM_LENGTH = 20;
 	public static final Integer MAXIMUM_PAGING_LIMIT = 10000;
 	public static final String AUTHORITIES_CLAIM_NAME = "roles";
+	public static final String USERNAME = "username";
+	public static final String USER_ID = "userId";
 
 	private Constants() {
 		super();

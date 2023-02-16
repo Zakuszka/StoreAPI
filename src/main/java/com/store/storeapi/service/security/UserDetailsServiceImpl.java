@@ -2,7 +2,6 @@ package com.store.storeapi.service.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	@Transactional
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DisabledException {
+	public AuthUserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DisabledException {
 		User user = userRepository.findByUsername(username);
 
 		if (user == null) {

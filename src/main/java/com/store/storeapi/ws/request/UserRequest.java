@@ -11,6 +11,7 @@ public class UserRequest {
 	private String phoneNumber;
 	private String address;
 	private List<String> roles;
+	private Boolean enabled;
 
 	public String getUsername() {
 		return username;
@@ -66,6 +67,14 @@ public class UserRequest {
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

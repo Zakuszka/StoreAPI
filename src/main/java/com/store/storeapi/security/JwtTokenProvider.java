@@ -121,8 +121,8 @@ public class JwtTokenProvider implements JwtDecoder {
 			return (HashMap<String, String>) claimsSet.getClaim(claims);
 		} catch (Exception exception) {
 			LOGGER.warn(String.format("[verifyAndGetKeyFromToken] Failed to read token: %s", exception.getMessage()));
-			throw new InternalServerErrorException(ErrorMessage.INVALID_CHANGE_PASSWORD_TOKEN.getCode(),
-					ErrorMessage.INVALID_CHANGE_PASSWORD_TOKEN.getMessage());
+			throw new InternalServerErrorException(ErrorMessage.INVALID_TOKEN.getCode(),
+					ErrorMessage.INVALID_TOKEN.getMessage());
 		}
 	}
 
